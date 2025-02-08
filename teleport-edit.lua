@@ -60,14 +60,22 @@ local mapFilename = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFul
 
 -- This is how its parameters can be read. Just load `ac.INIConfig` and map it into a simple and neat table.
 -- It would even have full documentation support with that VSCode plugin:
-local mapPath = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini'
+local mapIniPath = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini'
 
---local mapParams = ac.INIConfig.load(mapPath):mapSection('PARAMETERS', {
---  X_OFFSET = 0,  -- by providing default values script also specifies type, so that values can be parsed properly
---  Z_OFFSET = 0,
---  WIDTH = 600,
---  HEIGHT = 600
---})
+if io.open(mapIniPath, "r") then
+    io.close()
+    ac.sendChatMessage("[DEBUG] found map.ini at: " .. mapIniPath)
+else
+    ac.sendChatMessage("[ERROR] map.ini not found at: " .. mapIniPath)
+end
+
+local iniFile = ac.INIConfig.load(mapIniPath)
+if iniFile then
+    ac.sendChatMessage("[DEBUG] ini loaded successfully" .. tostring(iniFile))
+else
+    ac.sendChatMessage("[ERROR] failed to load ini file" .. tostring(iniFile))
+end
+
 
 local mapParams = ac.INIConfig.load(ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini'):mapSection('PARAMETERS', {
   X_OFFSET = 0,  -- by providing default values script also specifies type, so that values can be parsed properly
@@ -107,10 +115,10 @@ local function getWorldPosFromRelativePos(relativePos)
   local nearestOnTrack = ac.trackProgressToWorldCoordinate(trackProgress)
 
   -- debug prints
-  ac.sendChatMessage("Teleport Debug", string.format(
-    "Relative: (%.3f, %.3f) -> Raw: (%.3f, %.3f) -> World: (%.3f, %.3f, %.3f)",
-    relativePos.x, relativePos.y, mapParams.WIDTH, mapParams.HEIGHT, mapParams.X_OFFSET, mapParams.Z_OFFSET
-  ))
+  --ac.sendChatMessage("Teleport Debug", string.format(
+  --  "Relative: (%.3f, %.3f) -> Raw: (%.3f, %.3f) -> World: (%.3f, %.3f)",
+  --  relativePos.x, relativePos.y, mapParams.WIDTH, mapParams.HEIGHT, mapParams.X_OFFSET, mapParams.Z_OFFSET
+  --))
 
   -- And let’s just grab Y value from there. Not the best approach, but should work for most cases:
   ret.y = nearestOnTrack.y
