@@ -85,6 +85,8 @@ local function getWorldPosFromRelativePos(relativePos)
   -- Convert track spline progress back to world coordinates:
   local nearestOnTrack = ac.trackProgressToWorldCoordinate(trackProgress)
 
+  ac.sendChatMessage("[DEBUG] track width" .. tostring(mapParams.WIDTH))
+  ac.sendChatMessage("[DEBUG] track height" .. tostring(mapParams.HEIGHT))
   -- debug prints
   --ac.sendChatMessage("Teleport Debug", string.format(
   --  "Relative: (%.3f, %.3f) -> Raw: (%.3f, %.3f) -> World: (%.3f, %.3f)",
