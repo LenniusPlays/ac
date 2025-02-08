@@ -67,7 +67,10 @@ local mapParams = ac.INIConfig.load(ac.getFolder(ac.FolderID.ContentTracks)..'/'
   X_OFFSET = 0,  -- by providing default values script also specifies type, so that values can be parsed properly
   Z_OFFSET = 0,
   WIDTH = 600,
-  HEIGHT = 600
+  HEIGHT = 600,
+    -- added this because someone was retarded enough to invent this variable
+    -- in maps like nordschleife its 4x and thats why the tps dont work there
+  SCALE_FACTOR = 1
 })
 
 -- And last, size of the map. We could calculate it each frame, but it’s nicer if done this way:
@@ -77,7 +80,9 @@ local mapSize = vec2(mapParams.WIDTH / mapParams.HEIGHT * 600, 600)
 -- A simple helper function which would take a 2-dimensional vector relative to map.png and turn it into world coordinates:
 local function getWorldPosFromRelativePos(relativePos)
   -- Doing X and Z is not a problem, but vertical Y axis is a bit trickier. Set it to 0 for now:
-  local ret = vec3(relativePos.x * mapParams.WIDTH - mapParams.X_OFFSET, 0, relativePos.y * mapParams.HEIGHT - mapParams.Z_OFFSET)
+  --local ret = vec3(relativePos.x * mapParams.WIDTH - mapParams.X_OFFSET, 0, relativePos.y * mapParams.HEIGHT - mapParams.Z_OFFSET)
+  local ret = vec3((relativePos.x * mapParams.WIDTH * mapParams.SCALE_FACTOR) - mapParams.X_OFFSET, 0, (relativePos.y * mapParams.HEIGHT * mapParams.SCALE_FACTOR) - mapParams.Z_OFFSET)
+
 
   -- Convert resulting coordinates to track spline progress from 0 to 1:
   local trackProgress = ac.worldCoordinateToTrackProgress(ret)
@@ -85,8 +90,8 @@ local function getWorldPosFromRelativePos(relativePos)
   -- Convert track spline progress back to world coordinates:
   local nearestOnTrack = ac.trackProgressToWorldCoordinate(trackProgress)
 
-  ac.sendChatMessage("[DEBUG] track width" .. tostring(mapParams.WIDTH))
-  ac.sendChatMessage("[DEBUG] track height" .. tostring(mapParams.HEIGHT))
+  --ac.sendChatMessage("[DEBUG] track width" .. tostring(mapParams.WIDTH))
+  --ac.sendChatMessage("[DEBUG] track height" .. tostring(mapParams.HEIGHT))
   -- debug prints
   --ac.sendChatMessage("Teleport Debug", string.format(
   --  "Relative: (%.3f, %.3f) -> Raw: (%.3f, %.3f) -> World: (%.3f, %.3f)",
@@ -148,8 +153,8 @@ local function teleportHUD()
     if car.isConnected then
 
       -- Simple transformation from world to relative coordinates:
-      local posX = (car.position.x + mapParams.X_OFFSET) / mapParams.WIDTH
-      local posY = (car.position.z + mapParams.Z_OFFSET) / mapParams.HEIGHT
+      local posX = (car.position.x + mapParams.X_OFFSET) / (mapParams.WIDTH * mapParams.SCALE_FACTOR)
+      local posY = (car.position.z + mapParams.Z_OFFSET) / (mapParams.HEIGHT * mapParams.SCALE_FACTOR)
 
       -- And just draw a filled circle there. In blue if car is selected:
       ui.drawCircleFilled(drawFrom + vec2(posX, posY) * mapSize, 4, car == selectedCar and rgbm.colors.blue or rgbm.colors.red)
