@@ -75,21 +75,6 @@ local mapSize = vec2(mapParams.WIDTH / mapParams.HEIGHT * 600, 600)
 
 
 -- A simple helper function which would take a 2-dimensional vector relative to map.png and turn it into world coordinates:
---local function getWorldPosFromRelativePos(relativePos)
-  -- Doing X and Z is not a problem, but vertical Y axis is a bit trickier. Set it to 0 for now:
-  --local ret = vec3(relativePos.x * mapParams.WIDTH - mapParams.X_OFFSET, 0, relativePos.y * mapParams.HEIGHT - mapParams.Z_OFFSET)
-
-  -- Convert resulting coordinates to track spline progress from 0 to 1:
-  --local trackProgress = ac.worldCoordinateToTrackProgress(ret)
-
-  -- Convert track spline progress back to world coordinates:
-  --local nearestOnTrack = ac.trackProgressToWorldCoordinate(trackProgress)
-
-  -- And let’s just grab Y value from there. Not the best approach, but should work for most cases:
-  --ret.y = nearestOnTrack.y
-  --return ret
---end
--- modified function with debug prints
 local function getWorldPosFromRelativePos(relativePos)
   -- Doing X and Z is not a problem, but vertical Y axis is a bit trickier. Set it to 0 for now:
   local ret = vec3(relativePos.x * mapParams.WIDTH - mapParams.X_OFFSET, 0, relativePos.y * mapParams.HEIGHT - mapParams.Z_OFFSET)
@@ -191,8 +176,8 @@ local function teleportHUDClosed(okClicked)
   -- Function will be called if tool is closed with cancellation too, in case we’d want to dispose of something. But we’re
   -- only interested in it closing with “OK”, and if something was selected:
   ac.sendChatMessage("[DEBUG] track id: " .. ac.getTrackFullID('/'))
-  ac.sendChatMessage("[DEBUG] track path: " .. ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini')
-  ac.sendChatMessage("[DEBUG] track params: X=" .. tostring(mapParams.X_OFFSET) .. ", Z=" .. tostring(mapParams.Z_OFFSET) .. ", W=" .. tostring(mapParams.WIDTH) .. ", H=" .. tostring(mapParams.HEIGHT))
+  --ac.sendChatMessage("[DEBUG] track path: " .. ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini')
+  --ac.sendChatMessage("[DEBUG] track params: X=" .. tostring(mapParams.X_OFFSET) .. ", Z=" .. tostring(mapParams.Z_OFFSET) .. ", W=" .. tostring(mapParams.WIDTH) .. ", H=" .. tostring(mapParams.HEIGHT))
   
   local iniFile = ac.INIConfig.load(mapIniPath)
   if iniFile then
