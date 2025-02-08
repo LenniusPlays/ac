@@ -62,7 +62,14 @@ local mapFilename = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFul
 -- It would even have full documentation support with that VSCode plugin:
 local mapPath = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini'
 
-local mapParams = ac.INIConfig.load(mapPath):mapSection('PARAMETERS', {
+--local mapParams = ac.INIConfig.load(mapPath):mapSection('PARAMETERS', {
+--  X_OFFSET = 0,  -- by providing default values script also specifies type, so that values can be parsed properly
+--  Z_OFFSET = 0,
+--  WIDTH = 600,
+--  HEIGHT = 600
+--})
+
+local mapParams = ac.INIConfig.load(ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini'):mapSection('PARAMETERS', {
   X_OFFSET = 0,  -- by providing default values script also specifies type, so that values can be parsed properly
   Z_OFFSET = 0,
   WIDTH = 600,
@@ -90,24 +97,28 @@ local mapSize = vec2(mapParams.WIDTH / mapParams.HEIGHT * 600, 600)
 --end
 -- modified function with debug prints
 local function getWorldPosFromRelativePos(relativePos)
-  -- calculate initial x/z position based on map params
-  local rawX = relativePos.x * mapParams.WIDTH - mapParams.X_OFFSET
-  local rawZ = relativePos.y * mapParams.HEIGHT - mapParams.Z_OFFSET
+  -- Doing X and Z is not a problem, but vertical Y axis is a bit trickier. Set it to 0 for now:
+  local ret = vec3(relativePos.x * mapParams.WIDTH - mapParams.X_OFFSET, 0, relativePos.y * mapParams.HEIGHT - mapParams.Z_OFFSET)
 
-  -- convert to world coordinates
-  local ret = vec3(rawX, 0, rawZ)
+  -- Convert resulting coordinates to track spline progress from 0 to 1:
   local trackProgress = ac.worldCoordinateToTrackProgress(ret)
+
+  -- Convert track spline progress back to world coordinates:
   local nearestOnTrack = ac.trackProgressToWorldCoordinate(trackProgress)
-  ret.y = nearestOnTrack.y
 
   -- debug prints
   ac.sendChatMessage("Teleport Debug", string.format(
     "Relative: (%.3f, %.3f) -> Raw: (%.3f, %.3f) -> World: (%.3f, %.3f, %.3f)",
-    relativePos.x, relativePos.y, rawX, rawZ, ret.x, ret.y, ret.z
+    relativePos.x, relativePos.y, mapParams.WIDTH, mapParams.HEIGHT, mapParams.X_OFFSET, mapParams.Z_OFFSET
   ))
 
+  -- And let’s just grab Y value from there. Not the best approach, but should work for most cases:
+  ret.y = nearestOnTrack.y
   return ret
 end
+
+  
+
 
 -- This is the function that will create UI for the teleporting tool. Something very basic:
 local function teleportHUD()
