@@ -193,12 +193,6 @@ local function teleportHUDClosed(okClicked)
   ac.sendChatMessage("[DEBUG] track id: " .. ac.getTrackFullID('/'))
   ac.sendChatMessage("[DEBUG] track path: " .. ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini')
   ac.sendChatMessage("[DEBUG] track params: X=" .. tostring(mapParams.X_OFFSET) .. ", Z=" .. tostring(mapParams.Z_OFFSET) .. ", W=" .. tostring(mapParams.WIDTH) .. ", H=" .. tostring(mapParams.HEIGHT))
-  if io.open(mapIniPath, "r") then
-      io.close()
-      ac.sendChatMessage("[DEBUG] found map.ini at: " .. mapIniPath)
-  else
-      ac.sendChatMessage("[ERROR] map.ini not found at: " .. mapIniPath)
-  end
   
   local iniFile = ac.INIConfig.load(mapIniPath)
   if iniFile then
