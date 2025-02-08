@@ -22,6 +22,7 @@ local sim = ac.getSim()
 --   to send out the message.
 -- • It’s important to keep data layout the same between all clients. This is how ID of an event
 --   is generated.
+-- lennius: i hate my life why did they make this in lua and why is it this complicated
 local jumpEvent = ac.OnlineEvent({
   key = ac.StructItem.key('jumpSomewhere'),  -- to make sure there would be no collisions with other events, it’s a good idea to use a unique key
   targetSessionID = ac.StructItem.int32(),   -- since messages are broadcasted to everybody, we need to specify who we mean
@@ -60,16 +61,14 @@ local mapFilename = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFul
 
 -- This is how its parameters can be read. Just load `ac.INIConfig` and map it into a simple and neat table.
 -- It would even have full documentation support with that VSCode plugin:
---local mapIniPath = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini'
-
 
 local mapParams = ac.INIConfig.load(ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini'):mapSection('PARAMETERS', {
   X_OFFSET = 0,  -- by providing default values script also specifies type, so that values can be parsed properly
   Z_OFFSET = 0,
   WIDTH = 600,
   HEIGHT = 600,
-    -- added this because someone was retarded enough to invent this variable
-    -- in maps like nordschleife its 4x and thats why the tps dont work there
+    -- lennius: added scale_factor because someone was retarded enough to invent this variable and not use it
+    -- lennius: in maps like nordschleife its 4x and thats why the tps dont work there i.e. it downscales tp area
   SCALE_FACTOR = 1
 })
 
@@ -80,6 +79,7 @@ local mapSize = vec2(mapParams.WIDTH / mapParams.HEIGHT * 600, 600)
 -- A simple helper function which would take a 2-dimensional vector relative to map.png and turn it into world coordinates:
 local function getWorldPosFromRelativePos(relativePos)
   -- Doing X and Z is not a problem, but vertical Y axis is a bit trickier. Set it to 0 for now:
+  -- lennius: old method doesnt have scale_factor included
   --local ret = vec3(relativePos.x * mapParams.WIDTH - mapParams.X_OFFSET, 0, relativePos.y * mapParams.HEIGHT - mapParams.Z_OFFSET)
   local ret = vec3((relativePos.x * mapParams.WIDTH * mapParams.SCALE_FACTOR) - mapParams.X_OFFSET, 0, (relativePos.y * mapParams.HEIGHT * mapParams.SCALE_FACTOR) - mapParams.Z_OFFSET)
 
@@ -90,21 +90,10 @@ local function getWorldPosFromRelativePos(relativePos)
   -- Convert track spline progress back to world coordinates:
   local nearestOnTrack = ac.trackProgressToWorldCoordinate(trackProgress)
 
-  --ac.sendChatMessage("[DEBUG] track width" .. tostring(mapParams.WIDTH))
-  --ac.sendChatMessage("[DEBUG] track height" .. tostring(mapParams.HEIGHT))
-  -- debug prints
-  --ac.sendChatMessage("Teleport Debug", string.format(
-  --  "Relative: (%.3f, %.3f) -> Raw: (%.3f, %.3f) -> World: (%.3f, %.3f)",
-  --  relativePos.x, relativePos.y, mapParams.WIDTH, mapParams.HEIGHT, mapParams.X_OFFSET, mapParams.Z_OFFSET
-  --))
-
   -- And let’s just grab Y value from there. Not the best approach, but should work for most cases:
   ret.y = nearestOnTrack.y
   return ret
 end
-
-  
-
 
 -- This is the function that will create UI for the teleporting tool. Something very basic:
 local function teleportHUD()
@@ -153,6 +142,7 @@ local function teleportHUD()
     if car.isConnected then
 
       -- Simple transformation from world to relative coordinates:
+      -- lennius: because scale_factor was not accounted for it gave wrong cordinates
       local posX = (car.position.x + mapParams.X_OFFSET) / (mapParams.WIDTH * mapParams.SCALE_FACTOR)
       local posY = (car.position.z + mapParams.Z_OFFSET) / (mapParams.HEIGHT * mapParams.SCALE_FACTOR)
 
@@ -182,9 +172,6 @@ end
 local function teleportHUDClosed(okClicked)
   -- Function will be called if tool is closed with cancellation too, in case we’d want to dispose of something. But we’re
   -- only interested in it closing with “OK”, and if something was selected:
-  --ac.sendChatMessage("[DEBUG] track id: " .. ac.getTrackFullID('/'))
-  --ac.sendChatMessage("[DEBUG] track path: " .. ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini')
-  --ac.sendChatMessage("[DEBUG] track params: X=" .. tostring(mapParams.X_OFFSET) .. ", Z=" .. tostring(mapParams.Z_OFFSET) .. ", W=" .. tostring(mapParams.WIDTH) .. ", H=" .. tostring(mapParams.HEIGHT))
   if okClicked and selectedCar then
 
     -- Let’s get world coordinates using that simple function. Or, you can just use something like
