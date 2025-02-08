@@ -60,7 +60,9 @@ local mapFilename = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFul
 
 -- This is how its parameters can be read. Just load `ac.INIConfig` and map it into a simple and neat table.
 -- It would even have full documentation support with that VSCode plugin:
-local mapParams = ac.INIConfig.load(ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini'):mapSection('PARAMETERS', {
+local mapPath = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackID()..'/'..ac.getTrackLayoutID()..'/data/map.ini'
+
+local mapParams = ac.INIConfig.load(mapPath):mapSection('PARAMETERS', {
   X_OFFSET = 0,  -- by providing default values script also specifies type, so that values can be parsed properly
   Z_OFFSET = 0,
   WIDTH = 600,
@@ -69,6 +71,7 @@ local mapParams = ac.INIConfig.load(ac.getFolder(ac.FolderID.ContentTracks)..'/'
 
 -- And last, size of the map. We could calculate it each frame, but it’s nicer if done this way:
 local mapSize = vec2(mapParams.WIDTH / mapParams.HEIGHT * 600, 600)
+
 
 -- A simple helper function which would take a 2-dimensional vector relative to map.png and turn it into world coordinates:
 --local function getWorldPosFromRelativePos(relativePos)
@@ -98,7 +101,7 @@ local function getWorldPosFromRelativePos(relativePos)
   ret.y = nearestOnTrack.y
 
   -- debug prints
-  ac.debug("Teleport Debug", string.format(
+  ac.sendChatMessage("Teleport Debug", string.format(
     "Relative: (%.3f, %.3f) -> Raw: (%.3f, %.3f) -> World: (%.3f, %.3f, %.3f)",
     relativePos.x, relativePos.y, rawX, rawZ, ret.x, ret.y, ret.z
   ))
@@ -142,7 +145,10 @@ local function teleportHUD()
 
   -- Remember where we are and draw relative to that:
   local drawFrom = ui.getCursor()
-
+  -- debug stuff
+  ac.sendChatMessage("[DEBUG] track id: " .. ac.getTrackFullID('/'))
+  ac.sendChatMessage("[DEBUG] track path: " .. mapPath)
+  ac.sendChatMessage("[DEBUG] track params: " .. mapParams)
   -- Just draw the map itself:
   ui.drawImage(mapFilename, drawFrom, drawFrom + mapSize)
 
@@ -195,7 +201,7 @@ local function teleportHUDClosed(okClicked)
     local trackProgress = ac.worldCoordinateToTrackProgress(worldCoordinates)
     local worldDirection = (ac.trackProgressToWorldCoordinate(trackProgress + 1 / sim.trackLengthM) - ac.trackProgressToWorldCoordinate(trackProgress)):normalize()
 
-    ac.debug("Teleport Debug", string.format(
+    ac.sendChatMessage("Teleport Debug", string.format(
       "Teleporting car %d to (%.3f, %.3f, %.3f) with direction (%.3f, %.3f, %.3f)",
       selectedCar.sessionID, worldCoordinates.x, worldCoordinates.y, worldCoordinates.z,
       worldDirection.x, worldDirection.y, worldDirection.z
