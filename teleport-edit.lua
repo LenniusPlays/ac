@@ -190,10 +190,22 @@ end
 local function teleportHUDClosed(okClicked)
   -- Function will be called if tool is closed with cancellation too, in case we’d want to dispose of something. But we’re
   -- only interested in it closing with “OK”, and if something was selected:
-  --ac.sendChatMessage("[DEBUG] track id: " .. ac.getTrackFullID('/'))
-  --ac.sendChatMessage("[DEBUG] track path: " .. ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini')
-  --ac.sendChatMessage("[DEBUG] track params: X=" .. tostring(mapParams.X_OFFSET) .. ", Z=" .. tostring(mapParams.Z_OFFSET) .. ", W=" .. tostring(mapParams.WIDTH) .. ", H=" .. tostring(mapParams.HEIGHT))
-    
+  ac.sendChatMessage("[DEBUG] track id: " .. ac.getTrackFullID('/'))
+  ac.sendChatMessage("[DEBUG] track path: " .. ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini')
+  ac.sendChatMessage("[DEBUG] track params: X=" .. tostring(mapParams.X_OFFSET) .. ", Z=" .. tostring(mapParams.Z_OFFSET) .. ", W=" .. tostring(mapParams.WIDTH) .. ", H=" .. tostring(mapParams.HEIGHT))
+  if io.open(mapIniPath, "r") then
+      io.close()
+      ac.sendChatMessage("[DEBUG] found map.ini at: " .. mapIniPath)
+  else
+      ac.sendChatMessage("[ERROR] map.ini not found at: " .. mapIniPath)
+  end
+  
+  local iniFile = ac.INIConfig.load(mapIniPath)
+  if iniFile then
+      ac.sendChatMessage("[DEBUG] ini loaded successfully" .. tostring(iniFile))
+  else
+      ac.sendChatMessage("[ERROR] failed to load ini file" .. tostring(iniFile))
+  end
   if okClicked and selectedCar then
 
     -- Let’s get world coordinates using that simple function. Or, you can just use something like
