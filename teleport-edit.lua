@@ -60,7 +60,7 @@ local mapFilename = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFul
 
 -- This is how its parameters can be read. Just load `ac.INIConfig` and map it into a simple and neat table.
 -- It would even have full documentation support with that VSCode plugin:
-local mapPath = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackID()..'/'..ac.getTrackLayoutID()..'/data/map.ini'
+local mapPath = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini'
 
 local mapParams = ac.INIConfig.load(mapPath):mapSection('PARAMETERS', {
   X_OFFSET = 0,  -- by providing default values script also specifies type, so that values can be parsed properly
