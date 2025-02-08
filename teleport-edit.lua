@@ -147,8 +147,8 @@ local function teleportHUD()
   local drawFrom = ui.getCursor()
   -- debug stuff
   ac.sendChatMessage("[DEBUG] track id: " .. ac.getTrackFullID('/'))
-  ac.sendChatMessage("[DEBUG] track path: " .. mapPath)
-  ac.sendChatMessage("[DEBUG] track params: " .. mapParams)
+  ac.sendChatMessage("[DEBUG] track path: " .. ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini')
+  ac.sendChatMessage("[DEBUG] track params: X=" .. tostring(mapParams.X_OFFSET) .. ", Z=" .. tostring(mapParams.Z_OFFSET) .. ", W=" .. tostring(mapParams.WIDTH) .. ", H=" .. tostring(mapParams.HEIGHT))
   -- Just draw the map itself:
   ui.drawImage(mapFilename, drawFrom, drawFrom + mapSize)
 
