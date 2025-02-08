@@ -156,10 +156,6 @@ local function teleportHUD()
 
   -- Remember where we are and draw relative to that:
   local drawFrom = ui.getCursor()
-  -- debug stuff
-  ac.sendChatMessage("[DEBUG] track id: " .. ac.getTrackFullID('/'))
-  ac.sendChatMessage("[DEBUG] track path: " .. ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini')
-  ac.sendChatMessage("[DEBUG] track params: X=" .. tostring(mapParams.X_OFFSET) .. ", Z=" .. tostring(mapParams.Z_OFFSET) .. ", W=" .. tostring(mapParams.WIDTH) .. ", H=" .. tostring(mapParams.HEIGHT))
   -- Just draw the map itself:
   ui.drawImage(mapFilename, drawFrom, drawFrom + mapSize)
 
@@ -200,6 +196,10 @@ end
 local function teleportHUDClosed(okClicked)
   -- Function will be called if tool is closed with cancellation too, in case we’d want to dispose of something. But we’re
   -- only interested in it closing with “OK”, and if something was selected:
+  ac.sendChatMessage("[DEBUG] track id: " .. ac.getTrackFullID('/'))
+  ac.sendChatMessage("[DEBUG] track path: " .. ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini')
+  ac.sendChatMessage("[DEBUG] track params: X=" .. tostring(mapParams.X_OFFSET) .. ", Z=" .. tostring(mapParams.Z_OFFSET) .. ", W=" .. tostring(mapParams.WIDTH) .. ", H=" .. tostring(mapParams.HEIGHT))
+    
   if okClicked and selectedCar then
 
     -- Let’s get world coordinates using that simple function. Or, you can just use something like
@@ -212,12 +212,6 @@ local function teleportHUDClosed(okClicked)
     local trackProgress = ac.worldCoordinateToTrackProgress(worldCoordinates)
     local worldDirection = (ac.trackProgressToWorldCoordinate(trackProgress + 1 / sim.trackLengthM) - ac.trackProgressToWorldCoordinate(trackProgress)):normalize()
 
-    ac.sendChatMessage("Teleport Debug", string.format(
-      "Teleporting car %d to (%.3f, %.3f, %.3f) with direction (%.3f, %.3f, %.3f)",
-      selectedCar.sessionID, worldCoordinates.x, worldCoordinates.y, worldCoordinates.z,
-      worldDirection.x, worldDirection.y, worldDirection.z
-    ))
-    
     -- And emit the event:
     jumpEvent({
       targetSessionID = selectedCar.sessionID,
