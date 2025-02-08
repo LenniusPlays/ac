@@ -62,20 +62,6 @@ local mapFilename = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFul
 -- It would even have full documentation support with that VSCode plugin:
 local mapIniPath = ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini'
 
-if io.open(mapIniPath, "r") then
-    io.close()
-    ac.sendChatMessage("[DEBUG] found map.ini at: " .. mapIniPath)
-else
-    ac.sendChatMessage("[ERROR] map.ini not found at: " .. mapIniPath)
-end
-
-local iniFile = ac.INIConfig.load(mapIniPath)
-if iniFile then
-    ac.sendChatMessage("[DEBUG] ini loaded successfully" .. tostring(iniFile))
-else
-    ac.sendChatMessage("[ERROR] failed to load ini file" .. tostring(iniFile))
-end
-
 
 local mapParams = ac.INIConfig.load(ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini'):mapSection('PARAMETERS', {
   X_OFFSET = 0,  -- by providing default values script also specifies type, so that values can be parsed properly
@@ -204,9 +190,9 @@ end
 local function teleportHUDClosed(okClicked)
   -- Function will be called if tool is closed with cancellation too, in case we’d want to dispose of something. But we’re
   -- only interested in it closing with “OK”, and if something was selected:
-  ac.sendChatMessage("[DEBUG] track id: " .. ac.getTrackFullID('/'))
-  ac.sendChatMessage("[DEBUG] track path: " .. ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini')
-  ac.sendChatMessage("[DEBUG] track params: X=" .. tostring(mapParams.X_OFFSET) .. ", Z=" .. tostring(mapParams.Z_OFFSET) .. ", W=" .. tostring(mapParams.WIDTH) .. ", H=" .. tostring(mapParams.HEIGHT))
+  --ac.sendChatMessage("[DEBUG] track id: " .. ac.getTrackFullID('/'))
+  --ac.sendChatMessage("[DEBUG] track path: " .. ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini')
+  --ac.sendChatMessage("[DEBUG] track params: X=" .. tostring(mapParams.X_OFFSET) .. ", Z=" .. tostring(mapParams.Z_OFFSET) .. ", W=" .. tostring(mapParams.WIDTH) .. ", H=" .. tostring(mapParams.HEIGHT))
     
   if okClicked and selectedCar then
 
