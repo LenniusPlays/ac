@@ -180,13 +180,6 @@ local function teleportHUDClosed(okClicked)
   --ac.sendChatMessage("[DEBUG] track id: " .. ac.getTrackFullID('/'))
   --ac.sendChatMessage("[DEBUG] track path: " .. ac.getFolder(ac.FolderID.ContentTracks)..'/'..ac.getTrackFullID('/')..'/data/map.ini')
   --ac.sendChatMessage("[DEBUG] track params: X=" .. tostring(mapParams.X_OFFSET) .. ", Z=" .. tostring(mapParams.Z_OFFSET) .. ", W=" .. tostring(mapParams.WIDTH) .. ", H=" .. tostring(mapParams.HEIGHT))
-  
-  local iniFile = ac.INIConfig.load(mapIniPath)
-  if iniFile then
-      ac.sendChatMessage("[DEBUG] ini loaded successfully" .. tostring(iniFile))
-  else
-      ac.sendChatMessage("[ERROR] failed to load ini file" .. tostring(iniFile))
-  end
   if okClicked and selectedCar then
 
     -- Let’s get world coordinates using that simple function. Or, you can just use something like
